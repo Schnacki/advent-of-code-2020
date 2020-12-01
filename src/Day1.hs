@@ -1,19 +1,15 @@
 module Day1(part1, part2) where
 
 import Data.List(find)
+import Control.Applicative ((<|>))
 
 solvePart1 :: Int -> [Int] -> Maybe Int
 solvePart1 _ [] = Nothing
-solvePart1 expected (x:xs) = ((* x) <$> find (\i -> i + x == expected) xs) `orIfNothing` solvePart1 expected xs
+solvePart1 target (x:xs) = ((* x) <$> find (\i -> i + x == target) xs) <|> solvePart1 target xs
 
 solvePart2 :: Int -> [Int] -> Maybe Int
 solvePart2 _ [] = Nothing
-solvePart2 expected (x:xs) = ((* x) <$> solvePart1 (expected - x) xs) `orIfNothing` solvePart2 expected xs
-
--- There has to be an existing function for this?
-orIfNothing:: Maybe a -> Maybe a -> Maybe a
-orIfNothing Nothing b = b
-orIfNothing (Just a) _ = Just a
+solvePart2 target (x:xs) = ((* x) <$> solvePart1 (target - x) xs) <|> solvePart2 target xs
 
 readInputFile :: FilePath -> IO [Int]
 readInputFile file = fmap read . lines <$> readFile file
