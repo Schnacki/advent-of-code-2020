@@ -1,6 +1,7 @@
-module Day1(part1, part2) where
+module Day1(part1, part2, solvePart1, solvePart2) where
 
 import Data.List(find)
+import Data.Maybe(fromJust)
 import Control.Applicative ((<|>))
 
 solvePart1 :: Int -> [Int] -> Maybe Int
@@ -14,8 +15,8 @@ solvePart2 target (x:xs) = ((* x) <$> solvePart1 (target - x) xs) <|> solvePart2
 readInputFile :: FilePath -> IO [Int]
 readInputFile file = fmap read . lines <$> readFile file
 
-part1 :: FilePath -> IO (Maybe Int)
-part1 file = solvePart1 2020 <$> readInputFile file
+part1 :: FilePath -> IO Int
+part1 file = fromJust . solvePart1 2020 <$> readInputFile file
 
-part2 :: FilePath -> IO (Maybe Int)
-part2 file = solvePart2 2020 <$> readInputFile file
+part2 :: FilePath -> IO Int
+part2 file = fromJust . solvePart2 2020 <$> readInputFile file
