@@ -1,6 +1,6 @@
 .stack-work/
 .idea/
 *~
-advent-of-code-year2000.cabal
-advent-of-code-year2000.iml
+advent-of-code-year2020.cabal
+advent-of-code-year2020.iml
 stack.yaml.lock
