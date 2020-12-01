@@ -1,0 +1,3 @@
+# Advent Of Code 2020
+
+Trying to solve the excercises of [Advent Of Code](https://adventofcode.com/2020/) in Haskell once again...
