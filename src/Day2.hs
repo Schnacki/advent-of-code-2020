@@ -19,8 +19,8 @@ readPasswordFile file = fmap readPassword . lines <$> readFile file
             (min:max:letter:_:password:_) = splitOneOf "-: " input 
             in Password (read min, read max) (head letter) password
     
-part1 :: FilePath -> IO Int
-part1 file = solvePart1 <$> readPasswordFile file
+part1 :: FilePath -> IO ()
+part1 file = print . solvePart1 =<< readPasswordFile file
 
-part2 :: FilePath -> IO Int
-part2 file = solvePart2 <$> readPasswordFile file
+part2 :: FilePath -> IO ()
+part2 file = print . solvePart2 =<< readPasswordFile file

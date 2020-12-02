@@ -15,8 +15,8 @@ solvePart2 target (x:xs) = ((* x) <$> solvePart1 (target - x) xs) <|> solvePart2
 readInputFile :: FilePath -> IO [Int]
 readInputFile file = fmap read . lines <$> readFile file
 
-part1 :: FilePath -> IO Int
-part1 file = fromJust . solvePart1 2020 <$> readInputFile file
+part1 :: FilePath -> IO ()
+part1 file = print . fromJust . solvePart1 2020 =<< readInputFile file
 
-part2 :: FilePath -> IO Int
-part2 file = fromJust . solvePart2 2020 <$> readInputFile file
+part2 :: FilePath -> IO ()
+part2 file = print . fromJust . solvePart2 2020 =<< readInputFile file
