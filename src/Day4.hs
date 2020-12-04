@@ -4,15 +4,16 @@ import Data.List((\\))
 import Data.List.Split(splitWhen)
 import Data.Char(isDigit, isHexDigit)
 import Text.Read(readMaybe)
+import Data.Bifunctor(second)
 
 type PassportData = [(String, String)]
 
 parseInput :: String -> [PassportData]
-parseInput = map toTuples . map words . map unwords . splitWhen(=="") . lines
-  where toTuples = map ((\(a,b) -> (a, tail b)) . span (/=':'))
+parseInput = map (toTuples . words . unwords) . splitWhen (== "") . lines
+  where toTuples = map (second tail . span (/=':'))
 
 passportDataValid1 :: PassportData -> Bool
-passportDataValid1 = (== 0) . length . (["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"] \\) . map fst
+passportDataValid1 = null . (["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"] \\) . map fst
 
 solvePart1 :: [PassportData] -> Int
 solvePart1 = length . filter passportDataValid1
@@ -23,7 +24,7 @@ part1 file = readFile file >>= print . solvePart1 . parseInput
 passportIdValid :: PassportData -> Bool
 passportIdValid pwd = case lookup "pid" pwd of
   Nothing -> False
-  Just pid -> (length pid) == 9 && all isDigit pid
+  Just pid -> length pid == 9 && all isDigit pid
 
 eyecolorValid :: PassportData -> Bool
 eyecolorValid pwd = case lookup "ecl" pwd of

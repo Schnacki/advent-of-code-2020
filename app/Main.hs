@@ -2,6 +2,7 @@ module Main where
 
 import Day1(part1, part2)
 import Day2(part1, part2)
+import Day3(part1, part2)
 import Day4(part1, part2)
 
 main :: IO ()
@@ -15,6 +16,11 @@ main = do
     Day2.part1 "input/Day2.txt"
     putStr "Day 2 - Part 2: "
     Day2.part2 "input/Day2.txt"
+
+    putStr "Day 3 - Part 1: "
+    Day3.part1 "input/Day3.txt"
+    putStr "Day 3 - Part 2: "
+    Day3.part2 "input/Day3.txt"
 
     putStr "Day 4 - Part 1: "
     Day4.part1 "input/Day4.txt"
