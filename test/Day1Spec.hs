@@ -1,7 +1,7 @@
-module Day1Spec(spec) where
+module Day1Spec (spec) where
 
-import Test.Hspec
 import Day1
+import Test.Hspec
 
 spec = do
   describe "Part 1:" $ do
