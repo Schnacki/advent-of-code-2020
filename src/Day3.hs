@@ -6,23 +6,25 @@ type Route = [(Int, Int)]
 
 type Dimension = (Int, Int)
 
-route :: Dimension -> (Int, Int) -> Route
+type Direction = (Int, Int)
+
+route :: Dimension -> Direction -> Route
 route (width, height) (x, y) = takeWhile (\(a, b) -> b < height) $ zipWith (\a b -> (a `mod` width, b)) [x, 2 * x ..] [y, 2 * y ..]
 
 dimension :: Area -> Dimension
-dimension area = (length $ head area, length area)
+dimension area = (length . head $ area, length area)
 
-solveSlope :: Area -> (Int, Int) -> Int
-solveSlope area slope = length . filter (== '#') . map (\(x, y) -> (area !! y) !! x) $ route (dimension area) slope
+treesOnSlope :: Area -> Direction -> Int
+treesOnSlope area = length . filter (== '#') . map (\(x, y) -> (area !! y) !! x) . route (dimension area)
 
 solvePart1 :: Area -> Int
-solvePart1 area = solveSlope area (3, 1)
+solvePart1 area = treesOnSlope area (3, 1)
 
 solvePart2 :: Area -> Int
-solvePart2 area = product . map (solveSlope area) $ [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
+solvePart2 area = product . map (treesOnSlope area) $ [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
 
 part1 :: FilePath -> IO ()
-part1 file = readFile file >>= (print . solvePart1 . lines)
+part1 file = print . solvePart1 . lines =<< readFile file
 
 part2 :: FilePath -> IO ()
-part2 file = readFile file >>= (print . solvePart2 . lines)
+part2 file = print . solvePart2 . lines =<< readFile file

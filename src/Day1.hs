@@ -12,11 +12,11 @@ solvePart2 :: Int -> [Int] -> Maybe Int
 solvePart2 _ [] = Nothing
 solvePart2 target (x : xs) = ((* x) <$> solvePart1 (target - x) xs) <|> solvePart2 target xs
 
-readInputFile :: FilePath -> IO [Int]
-readInputFile file = fmap read . lines <$> readFile file
+parseInput :: String -> [Int]
+parseInput = fmap read . lines
 
 part1 :: FilePath -> IO ()
-part1 file = print . fromJust . solvePart1 2020 =<< readInputFile file
+part1 file = print . fromJust . solvePart1 2020 . parseInput  =<< readFile file
 
 part2 :: FilePath -> IO ()
-part2 file = print . fromJust . solvePart2 2020 =<< readInputFile file
+part2 file = print . fromJust . solvePart2 2020 . parseInput  =<< readFile file
