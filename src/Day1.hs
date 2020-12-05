@@ -6,7 +6,7 @@ import Control.Applicative ((<|>))
 
 solvePart1 :: Int -> [Int] -> Maybe Int
 solvePart1 _ [] = Nothing
-solvePart1 target (x:xs) = ((* x) <$> find (\i -> i + x == target) xs) <|> solvePart1 target xs
+solvePart1 target (x:xs) = ((* x) <$> find ((== target) . (+ x)) xs) <|> solvePart1 target xs
 
 solvePart2 :: Int -> [Int] -> Maybe Int
 solvePart2 _ [] = Nothing

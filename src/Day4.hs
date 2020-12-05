@@ -10,7 +10,7 @@ type PassportData = [(String, String)]
 
 parseInput :: String -> [PassportData]
 parseInput = map (toTuples . words . unwords) . splitWhen (== "") . lines
-  where toTuples = map (second tail . span (/=':'))
+  where toTuples = map (second tail . span (/= ':'))
 
 passportDataValid1 :: PassportData -> Bool
 passportDataValid1 = null . (["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"] \\) . map fst
@@ -26,8 +26,8 @@ passportIdValid pwd = case lookup "pid" pwd of
   Nothing -> False
   Just pid -> length pid == 9 && all isDigit pid
 
-eyecolorValid :: PassportData -> Bool
-eyecolorValid pwd = case lookup "ecl" pwd of
+eyeColorValid :: PassportData -> Bool
+eyeColorValid pwd = case lookup "ecl" pwd of
   Nothing -> False
   Just ecl -> ecl `elem` ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
 
@@ -63,7 +63,7 @@ heightValid pwd = case lookup "hgt" pwd of
 
 
 passportDataValid2 :: PassportData -> Bool
-passportDataValid2 pwd = and $ [passportDataValid1, passportIdValid, eyecolorValid, hairColorValid, birthYearValid, issuerYearValid, expirationYearValid, heightValid] <*> [pwd]
+passportDataValid2 pwd = and $ [passportDataValid1, passportIdValid, eyeColorValid, hairColorValid, birthYearValid, issuerYearValid, expirationYearValid, heightValid] <*> [pwd]
 
 solvePart2 :: [PassportData] -> Int
 solvePart2 = length . filter passportDataValid2

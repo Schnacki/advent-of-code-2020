@@ -2,11 +2,12 @@ module Day3(part1, part2, solvePart1, solvePart2) where
 
 type Area = [[Char]]
 type Route = [(Int, Int)]
+type Dimension = (Int, Int)
 
-route :: (Int, Int) -> (Int, Int) -> Route
+route :: Dimension -> (Int, Int) -> Route
 route (width, height) (x, y) = takeWhile (\(a, b) -> b < height) $ zipWith (\a b -> (a `mod` width, b)) [x, 2 * x ..] [y, 2 * y ..]
 
-dimension :: Area -> (Int, Int)
+dimension :: Area -> Dimension
 dimension area =  (length $ head area, length area)
 
 solveSlope :: Area -> (Int, Int) -> Int
