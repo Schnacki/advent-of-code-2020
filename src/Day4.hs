@@ -1,4 +1,4 @@
-module Day4 (solvePart1, solvePart2, parseInput, part1, part2) where
+module Day4 (solvePart1, solvePart2, part1, part2) where
 
 import Data.Bifunctor (second)
 import Data.Char (isDigit, isHexDigit)
@@ -20,11 +20,11 @@ parsePassport p = do
   pid <- lookup "pid" p
   return $ Passport byr iyr eyr hgt hcl ecl pid
 
-parseInput :: String -> [Maybe Passport]
-parseInput = map (parsePassport . map (second tail . span (/= ':')) . words . unwords) . splitWhen (== "") . lines
+parseInput :: String -> [Passport]
+parseInput = catMaybes . map (parsePassport . map (second tail . span (/= ':')) . words . unwords) . splitWhen (== "") . lines
 
 solvePart1 :: String -> Int
-solvePart1 = length . catMaybes . parseInput
+solvePart1 = length . parseInput
 
 part1 :: FilePath -> IO ()
 part1 file = readFile file >>= print . solvePart1
@@ -59,8 +59,8 @@ heightValid p = let (height, unit) = span isDigit (hgt p)
 passportDataValid :: Passport -> Bool
 passportDataValid p = and $ [passportIdValid, eyeColorValid, hairColorValid, birthYearValid, issuerYearValid, expirationYearValid, heightValid] <*> [p]
 
-solvePart2 :: [Passport] -> Int
-solvePart2 = length . filter passportDataValid
+solvePart2 :: String -> Int
+solvePart2 = length . filter passportDataValid . parseInput
 
 part2 :: FilePath -> IO ()
-part2 file = readFile file >>= print . solvePart2 . catMaybes . parseInput
+part2 file = readFile file >>= print . solvePart2
