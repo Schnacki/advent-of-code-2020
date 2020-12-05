@@ -14,6 +14,10 @@ spec = do
     it "Boarding pass BBFFBBFRLL has seat id 820." $ do
       Day5.solvePart1 ["BBFFBBFRLL"] `shouldBe` 820
 
-  describe "Part 2:" $ return ()
-
--- hard to test
+  describe "Part 2:" $ do
+    it "The remaining seat id is 355." $ do
+      Day5.solvePart2 ["FBFBBFFRLR","FBFBBFFRLL","FBFBBFFLRL"] `shouldBe` 355
+    it "The remaining seat id is 120." $ do
+      Day5.solvePart2 ["FFFBBBFRRR","FFFBBBRLLR","FFFBBBRLRL"] `shouldBe` 120
+    it "The remaining seat id is 821." $ do
+      Day5.solvePart2 ["BBFFBBFRLL","BBFFBBFRRL","BBFFBBFRRR"] `shouldBe` 821
