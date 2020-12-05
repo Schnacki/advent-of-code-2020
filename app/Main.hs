@@ -4,7 +4,7 @@ import Day1(part1, part2)
 import Day2(part1, part2)
 import Day3(part1, part2)
 import Day4(part1, part2)
-import Day5(part1)
+import Day5(part1, part2)
 
 main :: IO ()
 main = do
@@ -30,3 +30,5 @@ main = do
 
     putStr "Day 5 - Part 1: "
     Day5.part1 "input/Day5.txt"
+    putStr "Day 5 - Part 2: "
+    Day5.part2 "input/Day5.txt"
