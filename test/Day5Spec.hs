@@ -16,8 +16,8 @@ spec = do
 
   describe "Part 2:" $ do
     it "The remaining seat id is 355." $ do
-      Day5.solvePart2 ["FBFBBFFRLR","FBFBBFFRLL","FBFBBFFLRL"] `shouldBe` 355
+      Day5.solvePart2 ["FBFBBFFRLR", "FBFBBFFRLL", "FBFBBFFLRL"] `shouldBe` 355
     it "The remaining seat id is 120." $ do
-      Day5.solvePart2 ["FFFBBBFRRR","FFFBBBRLLR","FFFBBBRLRL"] `shouldBe` 120
+      Day5.solvePart2 ["FFFBBBFRRR", "FFFBBBRLLR", "FFFBBBRLRL"] `shouldBe` 120
     it "The remaining seat id is 821." $ do
-      Day5.solvePart2 ["BBFFBBFRLL","BBFFBBFRRL","BBFFBBFRRR"] `shouldBe` 821
+      Day5.solvePart2 ["BBFFBBFRLL", "BBFFBBFRRL", "BBFFBBFRRR"] `shouldBe` 821

@@ -4,71 +4,65 @@ import Data.Bifunctor (second)
 import Data.Char (isDigit, isHexDigit)
 import Data.List ((\\))
 import Data.List.Split (splitWhen)
+import Data.Maybe(catMaybes)
 import Text.Read (readMaybe)
 
-type PassportData = [(String, String)]
+data Passport = Passport { byr :: Int, iyr :: Int, eyr :: Int, hgt :: String, hcl :: String, ecl :: String, pid :: String } deriving Show
 
-parseInput :: String -> [PassportData]
-parseInput = map (toTuples . words . unwords) . splitWhen (== "") . lines
+parsePassport :: [(String, String)] -> Maybe Passport
+parsePassport pwd = do
+  byr <- lookup "byr" pwd >>= readMaybe
+  iyr <- lookup "iyr" pwd >>= readMaybe
+  eyr <- lookup "eyr" pwd >>= readMaybe
+  hgt <- lookup "hgt" pwd
+  hcl <- lookup "hcl" pwd
+  ecl <- lookup "ecl" pwd
+  pid <- lookup "pid" pwd
+  return $ Passport byr iyr eyr hgt hcl ecl pid
+
+parseInput :: String -> [Maybe Passport]
+parseInput = map (parsePassport . toTuples . words . unwords) . splitWhen (== "") . lines
   where
     toTuples = map (second tail . span (/= ':'))
 
-passportDataValid1 :: PassportData -> Bool
-passportDataValid1 = null . (["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"] \\) . map fst
-
-solvePart1 :: [PassportData] -> Int
-solvePart1 = length . filter passportDataValid1
+solvePart1 :: String -> Int
+solvePart1 = length . catMaybes . parseInput
 
 part1 :: FilePath -> IO ()
-part1 file = readFile file >>= print . solvePart1 . parseInput
+part1 file = readFile file >>= print . solvePart1
 
-passportIdValid :: PassportData -> Bool
-passportIdValid pwd = case lookup "pid" pwd of
-  Nothing -> False
-  Just pid -> length pid == 9 && all isDigit pid
 
-eyeColorValid :: PassportData -> Bool
-eyeColorValid pwd = case lookup "ecl" pwd of
-  Nothing -> False
-  Just ecl -> ecl `elem` ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
+passportIdValid :: Passport -> Bool
+passportIdValid pwd = length (pid pwd) == 9 && all isDigit (pid pwd)
 
-hairColorValid :: PassportData -> Bool
-hairColorValid pwd = case lookup "hcl" pwd of
-  Nothing -> False
-  Just hcl -> hash == '#' && length number == 6 && all isHexDigit number
-    where
-      (hash : number) = hcl
+eyeColorValid :: Passport -> Bool
+eyeColorValid pwd = (ecl pwd) `elem` ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
 
-birthYearValid :: PassportData -> Bool
-birthYearValid pwd = case lookup "byr" pwd >>= readMaybe of
-  Nothing -> False
-  Just year -> year >= 1920 && year <= 2002
+hairColorValid :: Passport -> Bool
+hairColorValid pwd = let (hash : number) = hcl pwd in
+  hash == '#' && length number == 6 && all isHexDigit number
 
-issuerYearValid :: PassportData -> Bool
-issuerYearValid pwd = case lookup "iyr" pwd >>= readMaybe of
-  Nothing -> False
-  Just year -> year >= 2010 && year <= 2020
+birthYearValid :: Passport -> Bool
+birthYearValid pwd = (byr pwd) >= 1920 && (byr pwd) <= 2002
 
-expirationYearValid :: PassportData -> Bool
-expirationYearValid pwd = case lookup "eyr" pwd >>= readMaybe of
-  Nothing -> False
-  Just year -> year >= 2020 && year <= 2030
+issuerYearValid :: Passport -> Bool
+issuerYearValid pwd = (iyr pwd) >= 2010 && (iyr pwd) <= 2020
 
-heightValid :: PassportData -> Bool
-heightValid pwd = case lookup "hgt" pwd of
-  Nothing -> False
-  Just hgt ->
-    let (height, unit) = span isDigit hgt
-     in case unit of
-          "cm" -> (read height :: Int) >= 150 && (read height :: Int) <= 193
-          "in" -> (read height :: Int) >= 59 && (read height :: Int) <= 76
-          _ -> False
+expirationYearValid :: Passport -> Bool
+expirationYearValid pwd = (eyr pwd) >= 2020 && (eyr pwd) <= 2030
 
-passportDataValid2 :: PassportData -> Bool
-passportDataValid2 pwd = and $ [passportDataValid1, passportIdValid, eyeColorValid, hairColorValid, birthYearValid, issuerYearValid, expirationYearValid, heightValid] <*> [pwd]
+heightValid :: Passport -> Bool
+heightValid pwd = let (height, unit) = span isDigit (hgt pwd)
+   in case unit of
+        "cm" -> (read height :: Int) >= 150 && (read height :: Int) <= 193
+        "in" -> (read height :: Int) >= 59 && (read height :: Int) <= 76
+        _ -> False
 
-solvePart2 :: [PassportData] -> Int
+passportDataValid2 :: Passport -> Bool
+passportDataValid2 pwd = and $ [passportIdValid, eyeColorValid, hairColorValid, birthYearValid, issuerYearValid, expirationYearValid, heightValid] <*> [pwd]
+
+solvePart2 :: [Passport] -> Int
 solvePart2 = length . filter passportDataValid2
 
 part2 :: FilePath -> IO ()
-part2 file = readFile file >>= print . solvePart2 . parseInput
+part2 file = readFile file >>= print . solvePart2 . catMaybes . parseInput
