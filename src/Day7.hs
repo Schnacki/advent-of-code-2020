@@ -1,6 +1,6 @@
-module Day7 (part1, part2, parentBags, allParentBags) where
+module Day7 (part1, part2, solvePart2) where
 
-import Data.List(nub)
+import Data.List(nub, lookup)
 import Data.Void
 
 import Text.Megaparsec as M
@@ -29,7 +29,7 @@ inputParser :: Parser [(String, [(Int, String)])]
 inputParser = M.many $ do
   bag <- parseBag
   string " contain "
-  bags <- try (string "no other bags" *> return []) <|> parseBagWithCount `sepBy` (string ", ")
+  bags <- try (string "no other bags" *> return []) <|> parseBagWithCount `sepBy` string ", "
   char '.'
   _ <- optional $ char '\n'
   return $  (bag, bags)
@@ -48,7 +48,10 @@ allParentBags allBags bag = let parents = parentBags bag allBags
 part1 :: FilePath -> IO ()
 part1 file = print . fmap (\bags -> length $ nub $ allParentBags bags "shiny gold") . parseInput =<< readFile file
 
+countBags :: String -> [(String, [(Int, String)])] -> Int
+countBags bag bags = maybe 0 (foldr (+) 1  . fmap (\(i, s) -> i * countBags s bags)) (lookup bag bags)
 
--- TODO
+solvePart2 = fmap ((\n -> n - 1) . countBags "shiny gold")
+
 part2 :: FilePath -> IO ()
-part2 file = return ()
+part2 file = print . solvePart2 . parseInput =<< readFile file
