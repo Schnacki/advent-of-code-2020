@@ -1,8 +1,7 @@
-module Day7 (part1, part2, solvePart2) where
+module Day7 (part1, part2, solvePart1, solvePart2) where
 
-import Data.List(nub, lookup)
+import Data.List (lookup, nub)
 import Data.Void
-
 import Text.Megaparsec as M
 import Text.Megaparsec.Char as C
 import Text.Megaparsec.Char.Lexer as L
@@ -32,24 +31,26 @@ inputParser = M.many $ do
   bags <- try (string "no other bags" *> return []) <|> parseBagWithCount `sepBy` string ", "
   char '.'
   _ <- optional $ char '\n'
-  return $  (bag, bags)
+  return (bag, bags)
 
 parseInput = M.parse inputParser ""
 
------------------------
 
 parentBags :: String -> [(String, [(Int, String)])] -> [String]
-parentBags bag = fmap fst . filter ( \(_, parents) -> any (\(_, b) -> b == bag) parents)
+parentBags bag = fmap fst . filter (\(_, parents) -> any (\(_, b) -> b == bag) parents)
 
 allParentBags :: [(String, [(Int, String)])] -> String -> [String]
-allParentBags allBags bag = let parents = parentBags bag allBags
-  in parents ++ concatMap (allParentBags allBags) parents
+allParentBags allBags bag =
+  let parents = parentBags bag allBags
+   in parents ++ concatMap (allParentBags allBags) parents
+   
+solvePart1 = fmap (\bags -> length $ nub $ allParentBags bags "shiny gold")
 
 part1 :: FilePath -> IO ()
-part1 file = print . fmap (\bags -> length $ nub $ allParentBags bags "shiny gold") . parseInput =<< readFile file
+part1 file = print . solvePart1 . parseInput =<< readFile file
 
 countBags :: String -> [(String, [(Int, String)])] -> Int
-countBags bag bags = maybe 0 (foldr (+) 1  . fmap (\(i, s) -> i * countBags s bags)) (lookup bag bags)
+countBags bag bags = maybe 0 (foldr (+) 1 . fmap (\(i, s) -> i * countBags s bags)) (lookup bag bags)
 
 solvePart2 = fmap ((\n -> n - 1) . countBags "shiny gold")
 
