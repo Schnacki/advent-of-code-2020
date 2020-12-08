@@ -1,10 +1,16 @@
-module Day8 (part1, part2, solvePart1, solvePart2, Operation (NOP, ACC, JMP), Computation(Computation)) where
+module Day8 (part1, part2, solvePart1, solvePart2, Operation (NOP, ACC, JMP), Computation (Computation)) where
 
 import Data.Maybe (mapMaybe)
 
 data Operation = NOP Int | ACC Int | JMP Int deriving (Show, Eq)
 
 data Computation = Computation [Int] Int Int [Operation]
+
+performOperation :: Computation -> Computation
+performOperation (Computation seen index val ops) = case ops !! index of
+  NOP _ -> Computation (index : seen) (index + 1) val ops
+  ACC a -> Computation (index : seen) (index + 1) (val + a) ops
+  JMP j -> Computation (index : seen) (index + j) val ops
 
 flipOperations :: [Operation] -> [[Operation]]
 flipOperations = flipOps []
@@ -15,7 +21,7 @@ flipOperations = flipOps []
     flipOp (NOP n) = JMP n
     flipOp (JMP j) = NOP j
     flipOps h [] = []
-    flipOps h (t : ts) = let ops = f (h ++ [t]) ts in if mayFlip t then (h ++ flipOp t : ts) : ops else ops
+    flipOps h (t : ts) = let ops = flipOps (h ++ [t]) ts in if mayFlip t then (h ++ flipOp t : ts) : ops else ops
 
 parseInput :: String -> Computation
 parseInput str = Computation [] 0 0 (map parseLine . lines $ str)
@@ -25,24 +31,17 @@ parseInput str = Computation [] 0 0 (map parseLine . lines $ str)
     parseLine ('j' : 'm' : 'p' : ' ' : number) = JMP $ read (filter (/= '+') number)
 
 solvePart1 :: Computation -> Int
-solvePart1 (Computation seen index val ops)
+solvePart1 comp@(Computation seen index val ops)
   | index `elem` seen = val
-  | otherwise = case ops !! index of
-    NOP _ -> solvePart1 $ Computation (index : seen) (index + 1) val ops
-    ACC a -> solvePart1 $ Computation (index : seen) (index + 1) (val + a) ops
-    JMP j -> solvePart1 $ Computation (index : seen) (index + j) val ops
+  | otherwise = solvePart1 $ performOperation comp
 
 solvePart2 :: Computation -> Int
-solvePart2 (Computation seen index val ops) = head . mapMaybe (solve seen index val) . flipOperations $ ops
+solvePart2 (Computation seen index val ops) = head . mapMaybe (solve . Computation seen index val) . flipOperations $ ops
   where
-    solve seen index val ops
+    solve comp@(Computation seen index val ops)
       | index `elem` seen = Nothing
       | index >= length ops = Just val
-      | otherwise =
-        case ops !! index of
-          NOP n -> solve (index : seen) (index + 1) val ops
-          ACC a -> solve (index : seen) (index + 1) (val + a) ops
-          JMP j -> solve (index : seen) (index + j) val ops
+      | otherwise = solve $ performOperation comp
 
 part1 :: FilePath -> IO ()
 part1 file = print . solvePart1 . parseInput =<< readFile file
