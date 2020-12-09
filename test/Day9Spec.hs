@@ -9,3 +9,6 @@ spec = do
   describe "Part 1:" $ do
     it "127 does not follow the rule." $ do
       Day9.solvePart1 5 list `shouldBe` 127
+  describe "Part 2:" $ do
+    it "The smallest and largest number add up to 62" $ do
+      Day9.solvePart2 127 list `shouldBe` 62
