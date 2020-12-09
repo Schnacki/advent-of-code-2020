@@ -24,7 +24,9 @@ parseBagWithCount = do
   bag <- parseBag
   return (i, bag)
 
-inputParser :: Parser [(String, [(Int, String)])]
+type BagList = [(String, [(Int, String)])]
+
+inputParser :: Parser BagList
 inputParser = M.many $ do
   bag <- parseBag
   string " contain "
@@ -33,26 +35,31 @@ inputParser = M.many $ do
   _ <- optional $ char '\n'
   return (bag, bags)
 
-parseInput = M.parse inputParser ""
+parseInput :: String -> BagList
+parseInput input = case M.parse inputParser "" input of
+              Left _ -> []
+              Right a -> a
 
 
-parentBags :: String -> [(String, [(Int, String)])] -> [String]
+parentBags :: String -> BagList -> [String]
 parentBags bag = fmap fst . filter (\(_, parents) -> any (\(_, b) -> b == bag) parents)
 
-allParentBags :: [(String, [(Int, String)])] -> String -> [String]
+allParentBags :: BagList -> String -> [String]
 allParentBags allBags bag =
   let parents = parentBags bag allBags
    in parents ++ concatMap (allParentBags allBags) parents
-   
-solvePart1 = fmap (\bags -> length $ nub $ allParentBags bags "shiny gold")
+
+solvePart1 :: BagList -> Int
+solvePart1 bags = length . nub $ allParentBags bags "shiny gold"
 
 part1 :: FilePath -> IO ()
 part1 file = print . solvePart1 . parseInput =<< readFile file
 
-countBags :: String -> [(String, [(Int, String)])] -> Int
+countBags :: String -> BagList -> Int
 countBags bag bags = maybe 0 (foldr (+) 1 . fmap (\(i, s) -> i * countBags s bags)) (lookup bag bags)
 
-solvePart2 = fmap ((\n -> n - 1) . countBags "shiny gold")
+solvePart2 :: [(String, [(Int, String)])] -> Int
+solvePart2 = (\n -> n - 1) . countBags "shiny gold"
 
 part2 :: FilePath -> IO ()
 part2 file = print . solvePart2 . parseInput =<< readFile file
