@@ -22,8 +22,8 @@ parsePolicies = fmap parsePolicy . lines
       let (min : max : letter : _ : password : _) = splitOneOf "-: " input
        in Policy (read min, read max) (head letter) password
 
-part1 :: FilePath -> IO ()
-part1 file = print . solvePart1 . parsePolicies =<< readFile file
+part1 :: String -> Int
+part1 = solvePart1 . parsePolicies
 
-part2 :: FilePath -> IO ()
-part2 file = print . solvePart2 . parsePolicies =<< readFile file
+part2 :: String -> Int
+part2 = solvePart2 . parsePolicies

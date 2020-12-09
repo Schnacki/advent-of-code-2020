@@ -23,8 +23,8 @@ solvePart1 area = treesOnSlope area (3, 1)
 solvePart2 :: Area -> Int
 solvePart2 area = product . map (treesOnSlope area) $ [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
 
-part1 :: FilePath -> IO ()
-part1 file = print . solvePart1 . lines =<< readFile file
+part1 :: String -> Int
+part1 = solvePart1 . lines
 
-part2 :: FilePath -> IO ()
-part2 file = print . solvePart2 . lines =<< readFile file
+part2 :: String -> Int
+part2 = solvePart2 . lines

@@ -26,8 +26,8 @@ parseInput = mapMaybe (parsePassport . map (second tail . span (/= ':')) . words
 solvePart1 :: String -> Int
 solvePart1 = length . parseInput
 
-part1 :: FilePath -> IO ()
-part1 file = print . solvePart1 =<< readFile file
+part1 :: String -> Int
+part1 = solvePart1
 
 passportIdValid :: Passport -> Bool
 passportIdValid p = length (pid p) == 9 && all isDigit (pid p)
@@ -63,5 +63,5 @@ passportDataValid p = and $ [passportIdValid, eyeColorValid, hairColorValid, bir
 solvePart2 :: String -> Int
 solvePart2 = length . filter passportDataValid . parseInput
 
-part2 :: FilePath -> IO ()
-part2 file = print . solvePart2 =<< readFile file
+part2 :: String -> Int
+part2 = solvePart2

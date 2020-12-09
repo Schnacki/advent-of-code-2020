@@ -12,6 +12,9 @@ import Day9 (part1, part2)
 
 main :: IO ()
 main = do
+  printLine
+  printTableRow "Day" "Part 1" "Part 2"
+  printLine
   solveDay 1 Day1.part1 Day1.part2
   solveDay 2 Day2.part1 Day2.part2
   solveDay 3 Day3.part1 Day3.part2
@@ -21,11 +24,16 @@ main = do
   solveDay 7 Day7.part1 Day7.part2
   solveDay 8 Day8.part1 Day8.part2
   solveDay 9 Day9.part1 Day9.part2
+  printLine
 
-solveDay :: Int -> (FilePath -> IO ()) -> (FilePath -> IO ()) -> IO ()
+solveDay :: Int -> (String -> Int) -> (String -> Int) -> IO ()
 solveDay day part1 part2 = do
-  putStr $ "Day " ++ show day ++ " - Part 1: "
-  part1 $ "input/Day" ++ show day ++ ".txt"
-  putStr $ "Day " ++ show day ++ " - Part 2: "
-  part2 $ "input/Day" ++ show day ++ ".txt"
-  putStrLn $ replicate 30 '-'
+  input <- readFile $ "input/Day" ++ show day ++ ".txt"
+  printTableRow (show day) (show (part1 input)) (show (part2 input))
+
+printTableRow :: String -> String -> String -> IO ()
+printTableRow a b c = putStrLn $ "| " ++ toSize 4 a ++ "| " ++ toSize 13 b ++ "| " ++ toSize 13 c ++ "|"
+  where toSize size str = str ++ replicate (size - length str) ' '
+
+printLine :: IO ()
+printLine = putStrLn "-------------------------------------"

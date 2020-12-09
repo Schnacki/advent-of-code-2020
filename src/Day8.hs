@@ -46,8 +46,8 @@ solvePart2 = head . mapMaybe solve . corruptComputation
       | opIndex comp >= (length . ops) comp = Just $ acc comp
       | otherwise = solve . performOperation $ comp
 
-part1 :: FilePath -> IO ()
-part1 file = print . solvePart1 . parseInput =<< readFile file
+part1 :: String -> Int
+part1 = solvePart1 . parseInput
 
-part2 :: FilePath -> IO ()
-part2 file = print . solvePart2 . parseInput =<< readFile file
+part2 :: String -> Int
+part2 = solvePart2 . parseInput

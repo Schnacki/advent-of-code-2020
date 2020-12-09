@@ -52,8 +52,8 @@ allParentBags allBags bag =
 solvePart1 :: BagList -> Int
 solvePart1 bags = length . nub $ allParentBags bags "shiny gold"
 
-part1 :: FilePath -> IO ()
-part1 file = print . solvePart1 . parseInput =<< readFile file
+part1 :: String -> Int
+part1 = solvePart1 . parseInput
 
 countBags :: String -> BagList -> Int
 countBags bag bags = maybe 0 (foldr (+) 1 . fmap (\(i, s) -> i * countBags s bags)) (lookup bag bags)
@@ -61,5 +61,5 @@ countBags bag bags = maybe 0 (foldr (+) 1 . fmap (\(i, s) -> i * countBags s bag
 solvePart2 :: [(String, [(Int, String)])] -> Int
 solvePart2 = (\n -> n - 1) . countBags "shiny gold"
 
-part2 :: FilePath -> IO ()
-part2 file = print . solvePart2 . parseInput =<< readFile file
+part2 :: String -> Int
+part2 = solvePart2 . parseInput

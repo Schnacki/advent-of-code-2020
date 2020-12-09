@@ -29,8 +29,8 @@ solvePart2 val (x : xs) = case sumTo val (x, x) (x : xs) of
 parseInput :: String -> [Int]
 parseInput = fmap read . lines
 
-part1 :: FilePath -> IO ()
-part1 file = print . solvePart1 32 . parseInput =<< readFile file
+part1 :: String -> Int
+part1 = solvePart1 32 . parseInput
 
-part2 :: FilePath -> IO ()
-part2 file = print . solvePart2 258585477 . parseInput =<< readFile file
+part2 :: String -> Int
+part2 = solvePart2 258585477 . parseInput
