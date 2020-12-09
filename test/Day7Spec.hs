@@ -18,7 +18,7 @@ bags =
 spec = do
   describe "Part 1:" $ do
     it "4 bag colors can eventually contain at least one shiny gold bag." $ do
-      Day7.solvePart1 (Right bags) `shouldBe` Right 4
+      Day7.solvePart1 bags `shouldBe` 4
   describe "Part 2:" $ do
     it "A single shiny gold bag must contain 32 bags." $ do
-      Day7.solvePart2 (Right bags) `shouldBe` Right 32
+      Day7.solvePart2 bags `shouldBe` 32
