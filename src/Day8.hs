@@ -4,14 +4,17 @@ import Data.Maybe (mapMaybe)
 
 data Operation = NOP Int | ACC Int | JMP Int deriving (Show, Eq)
 
-data Computation = Computation [Int] Int Int [Operation]
+data Computation = Computation {seen :: [Int], opIndex :: Int, acc :: Int, ops :: [Operation]}
+
+inLoop :: Computation -> Bool
+inLoop (Computation seen index _ _) = index `elem` seen
 
 parseInput :: String -> Computation
-parseInput str = Computation [] 0 0 (map parseLine . lines $ str)
+parseInput = Computation [] 0 0 . map parseLine . lines
   where
-    parseLine ('n' : 'o' : 'p' : ' ' : number) = NOP $ read (filter (/= '+') number)
-    parseLine ('a' : 'c' : 'c' : ' ' : number) = ACC $ read (filter (/= '+') number)
-    parseLine ('j' : 'm' : 'p' : ' ' : number) = JMP $ read (filter (/= '+') number)
+    parseLine ('n' : 'o' : 'p' : ' ' : number) = NOP . read . filter (/= '+') $ number
+    parseLine ('a' : 'c' : 'c' : ' ' : number) = ACC . read . filter (/= '+') $ number
+    parseLine ('j' : 'm' : 'p' : ' ' : number) = JMP . read . filter (/= '+') $ number
 
 performOperation :: Computation -> Computation
 performOperation (Computation seen index val ops) = case ops !! index of
@@ -20,9 +23,9 @@ performOperation (Computation seen index val ops) = case ops !! index of
   JMP j -> Computation (index : seen) (index + j) val ops
 
 solvePart1 :: Computation -> Int
-solvePart1 comp@(Computation seen index val ops)
-  | index `elem` seen = val
-  | otherwise = solvePart1 . performOperation $ comp
+solvePart1 computation
+  | inLoop computation = acc computation
+  | otherwise = solvePart1 . performOperation $ computation
 
 corruptComputation :: Computation -> [Computation]
 corruptComputation (Computation seen index val ops) = fmap (Computation seen index val) (flipOps [] ops)
@@ -38,9 +41,9 @@ corruptComputation (Computation seen index val ops) = fmap (Computation seen ind
 solvePart2 :: Computation -> Int
 solvePart2 = head . mapMaybe solve . corruptComputation
   where
-    solve comp@(Computation seen index val ops)
-      | index `elem` seen = Nothing
-      | index >= length ops = Just val
+    solve comp
+      | inLoop comp = Nothing
+      | opIndex comp >= (length . ops) comp = Just $ acc comp
       | otherwise = solve . performOperation $ comp
 
 part1 :: FilePath -> IO ()
