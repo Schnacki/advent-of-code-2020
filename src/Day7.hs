@@ -1,5 +1,6 @@
 module Day7 (part1, part2, solvePart1, solvePart2) where
 
+import Data.Functor (($>))
 import Data.List (lookup, nub)
 import Data.Void
 import Text.Megaparsec as M
@@ -30,7 +31,7 @@ inputParser :: Parser BagList
 inputParser = M.many $ do
   bag <- parseBag
   string " contain "
-  bags <- try (string "no other bags" *> return []) <|> parseBagWithCount `sepBy` string ", "
+  bags <- try (string "no other bags" $> []) <|> parseBagWithCount `sepBy` string ", "
   char '.'
   _ <- optional $ char '\n'
   return (bag, bags)
@@ -56,9 +57,9 @@ part1 :: String -> Int
 part1 = solvePart1 . parseInput
 
 countBags :: String -> BagList -> Int
-countBags bag bags = maybe 0 (foldr (+) 1 . fmap (\(i, s) -> i * countBags s bags)) (lookup bag bags)
+countBags bag bags = maybe 0 (foldr (+) 1 . fmap (\(i, s) -> i * countBags s bags)) . lookup bag $ bags
 
-solvePart2 :: [(String, [(Int, String)])] -> Int
+solvePart2 :: BagList -> Int
 solvePart2 = (\n -> n - 1) . countBags "shiny gold"
 
 part2 :: String -> Int

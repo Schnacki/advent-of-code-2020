@@ -9,10 +9,11 @@ import Day6 (part1, part2)
 import Day7 (part1, part2)
 import Day8 (part1, part2)
 import Day9 (part1, part2)
+import Day10 (part1, part2)
 
 main :: IO ()
 main = do
-  printLine
+  printTop
   printTableRow "Day" "Part 1" "Part 2"
   printLine
   solveDay 1 Day1.part1 Day1.part2
@@ -24,7 +25,8 @@ main = do
   solveDay 7 Day7.part1 Day7.part2
   solveDay 8 Day8.part1 Day8.part2
   solveDay 9 Day9.part1 Day9.part2
-  printLine
+  solveDay 10 Day10.part1 Day10.part2
+  printBottom
 
 solveDay :: Int -> (String -> Int) -> (String -> Int) -> IO ()
 solveDay day part1 part2 = do
@@ -32,8 +34,14 @@ solveDay day part1 part2 = do
   printTableRow (show day) (show (part1 input)) (show (part2 input))
 
 printTableRow :: String -> String -> String -> IO ()
-printTableRow a b c = putStrLn $ "| " ++ toSize 4 a ++ "| " ++ toSize 13 b ++ "| " ++ toSize 13 c ++ "|"
+printTableRow a b c = putStrLn $ "┃ " ++ toSize 4 a ++ "┃ " ++ toSize 13 b ++ "┃ " ++ toSize 13 c ++ "┃"
   where toSize size str = str ++ replicate (size - length str) ' '
 
 printLine :: IO ()
-printLine = putStrLn "-------------------------------------"
+printLine = putStrLn "┣━━━━━╋━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━┫"
+
+printTop :: IO ()
+printTop = putStrLn "┏━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┓"
+
+printBottom :: IO ()
+printBottom = putStrLn "┗━━━━━┻━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━┛"
