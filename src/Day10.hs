@@ -19,20 +19,18 @@ solvePart1 = (\map -> M.findWithDefault 0 1 map * (1 + M.findWithDefault 0 3 map
 part1 :: String -> Int
 part1 = solvePart1 . parseInput
 
-diffs :: [Int] -> [Int]
-diffs xs = zipWith (-) (tail xs) xs
-
-groupAdjacent :: [Int] -> [Int]
-groupAdjacent [] = []
-groupAdjacent (3:xs) = groupAdjacent xs
-groupAdjacent (1:xs) = let (ones,rest) = span ((==) 1 ) xs in (length ones + 2):(groupAdjacent rest)
+countAdjacents :: [Int] -> [Int]
+countAdjacents xs = let diffs = zipWith (-) (tail xs) xs in count diffs
+  where
+    count [] = []
+    count (1 : xs) = let (ones, rest) = span (1 ==) xs in (length ones + 2) : count rest
+    count (_ : xs) = count xs
 
 solvePart2 :: [Int] -> Int
-solvePart2 = product . map toNum . groupAdjacent . diffs . sort . (:) 0
+solvePart2 = product . map numPermutations . countAdjacents . sort . (:) 0
   where
-    toNum 1 = 1
-    toNum n = sum $ map toNum [max 1 (n-3) .. n-1]
-
+    numPermutations 1 = 1
+    numPermutations n = sum . map numPermutations $ [max 1 (n - 3) .. n - 1]
 
 part2 :: String -> Int
 part2 = solvePart2 . parseInput
