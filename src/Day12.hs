@@ -39,7 +39,14 @@ solvePart1 input =
 part1 :: String -> Int
 part1 = solvePart1 . fmap read . lines
 
+
 data Ship2 = Ship2 (Int, Int) (Int, Int) deriving (Show)
+
+rotate :: (Int, Int) -> Int -> (Int, Int)
+rotate (wx,wy) 0 = (wx, wy)
+rotate (wx,wy) 90 = (wy, - wx)
+rotate (wx,wy) 180 = (- wx, - wy)
+rotate (wx,wy) 270 = (- wy, wx)
 
 steps2 :: Ship2 -> [Action] -> Ship2
 steps2 = foldl step
@@ -49,16 +56,8 @@ steps2 = foldl step
       SOUTH v -> Ship2 (x, y) (wx + v, wy)
       EAST v -> Ship2 (x, y) (wx, wy + v)
       WEST v -> Ship2 (x, y) (wx, wy - v)
-      LEFT v -> case v of
-        0 -> Ship2 (x, y) (wx, wy)
-        90 -> Ship2 (x, y) (- wy, wx)
-        180 -> Ship2 (x, y) (- wx, - wy)
-        270 -> Ship2 (x, y) (wy, - wx)
-      RIGHT v -> case v of
-        0 -> Ship2 (x, y) (wx, wy)
-        90 -> Ship2 (x, y) (wy, - wx)
-        180 -> Ship2 (x, y) (- wx, - wy)
-        270 -> Ship2 (x, y) (- wy, wx)
+      LEFT v -> Ship2 (x, y) (rotate (wx, wy) (negate v `mod` 360))
+      RIGHT v -> Ship2 (x, y) (rotate (wx, wy) v)
       FORWARD v -> Ship2 (x + v * wx, y + v * wy) (wx, wy)
 
 solvePart2 :: [Action] -> Int
