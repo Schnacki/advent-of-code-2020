@@ -3,15 +3,14 @@ module Day12 (part1, part2, solvePart1, solvePart2, Action (..)) where
 data Action = NORTH Int | SOUTH Int | EAST Int | WEST Int | LEFT Int | RIGHT Int | FORWARD Int deriving (Show)
 
 instance Read Action where
-  readsPrec _ (action : number) = case action of
-    'N' -> [(NORTH $ read number, "")]
-    'S' -> [(SOUTH $ read number, "")]
-    'E' -> [(EAST $ read number, "")]
-    'W' -> [(WEST $ read number, "")]
-    'L' -> [(LEFT $ read number, "")]
-    'R' -> [(RIGHT $ read number, "")]
-    'F' -> [(FORWARD $ read number, "")]
-    _ -> []
+  readsPrec _ ('N' : n) = [(NORTH $ read n, "")]
+  readsPrec _ ('S' : n) = [(SOUTH $ read n, "")]
+  readsPrec _ ('E' : n) = [(EAST $ read n, "")]
+  readsPrec _ ('W' : n) = [(WEST $ read n, "")]
+  readsPrec _ ('L' : n) = [(LEFT $ read n, "")]
+  readsPrec _ ('R' : n) = [(RIGHT $ read n, "")]
+  readsPrec _ ('F' : n) = [(FORWARD $ read n, "")]
+  readsPrec _ xs = []
 
 manhattan :: (Int, Int) -> Int
 manhattan (x, y) = abs x + abs y

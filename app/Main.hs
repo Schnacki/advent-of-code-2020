@@ -10,6 +10,7 @@ import Day7 (part1, part2)
 import Day8 (part1, part2)
 import Day9 (part1, part2)
 import Day10 (part1, part2)
+import Day11 (part1, part2)
 import Day12 (part1, part2)
 
 main :: IO ()
@@ -27,6 +28,7 @@ main = do
   solveDay 8 Day8.part1 Day8.part2
   solveDay 9 Day9.part1 Day9.part2
   solveDay 10 Day10.part1 Day10.part2
+  solveDay 11 Day11.part1 Day11.part2
   solveDay 12 Day12.part1 Day12.part2
   printBottom
 
