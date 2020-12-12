@@ -1,4 +1,4 @@
-module Day10 (part1, part2, solvePart1) where
+module Day10 (part1, part2, solvePart1, solvePart2) where
 
 import Data.List (sort)
 import qualified Data.Map as M
@@ -19,5 +19,20 @@ solvePart1 = (\map -> M.findWithDefault 0 1 map * (1 + M.findWithDefault 0 3 map
 part1 :: String -> Int
 part1 = solvePart1 . parseInput
 
+diffs :: [Int] -> [Int]
+diffs xs = zipWith (-) (tail xs) xs
+
+groupAdjacent :: [Int] -> [Int]
+groupAdjacent [] = []
+groupAdjacent (3:xs) = groupAdjacent xs
+groupAdjacent (1:xs) = let (ones,rest) = span ((==) 1 ) xs in (length ones + 2):(groupAdjacent rest)
+
+solvePart2 :: [Int] -> Int
+solvePart2 = product . map toNum . groupAdjacent . diffs . sort . (:) 0
+  where
+    toNum 1 = 1
+    toNum n = sum $ map toNum [max 1 (n-3) .. n-1]
+
+
 part2 :: String -> Int
-part2 str = 0
+part2 = solvePart2 . parseInput
