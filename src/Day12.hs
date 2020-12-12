@@ -13,6 +13,9 @@ instance Read Action where
     'F' -> [(FORWARD $ read number, "")]
     _ -> []
 
+manhattan :: (Int, Int) -> Int
+manhattan (x, y) = abs x + abs y
+
 data Ship = Ship {pos :: (Int, Int), direction :: Int} deriving (Show)
 
 steps :: Ship -> [Action] -> Ship
@@ -32,21 +35,18 @@ steps = foldl step
         270 -> Ship (x, y - v) dir
 
 solvePart1 :: [Action] -> Int
-solvePart1 input =
-  let (Ship (x, y) _) = steps (Ship (0, 0) 90) input
-   in abs x + abs y
+solvePart1 = manhattan . pos . steps (Ship (0, 0) 90)
 
 part1 :: String -> Int
 part1 = solvePart1 . fmap read . lines
 
-
-data Ship2 = Ship2 (Int, Int) (Int, Int) deriving (Show)
+data Ship2 = Ship2 {pos' :: (Int, Int), wayPoint :: (Int, Int)} deriving (Show)
 
 rotate :: (Int, Int) -> Int -> (Int, Int)
-rotate (wx,wy) 0 = (wx, wy)
-rotate (wx,wy) 90 = (wy, - wx)
-rotate (wx,wy) 180 = (- wx, - wy)
-rotate (wx,wy) 270 = (- wy, wx)
+rotate (wx, wy) 0 = (wx, wy)
+rotate (wx, wy) 90 = (wy, - wx)
+rotate (wx, wy) 180 = (- wx, - wy)
+rotate (wx, wy) 270 = (- wy, wx)
 
 steps2 :: Ship2 -> [Action] -> Ship2
 steps2 = foldl step
@@ -61,9 +61,7 @@ steps2 = foldl step
       FORWARD v -> Ship2 (x + v * wx, y + v * wy) (wx, wy)
 
 solvePart2 :: [Action] -> Int
-solvePart2 input =
-  let (Ship2 (x, y) _) = steps2 (Ship2 (0, 0) (-1, 10)) input
-   in abs x + abs y
+solvePart2 = manhattan . pos' . steps2 (Ship2 (0, 0) (-1, 10))
 
 part2 :: String -> Int
 part2 = solvePart2 . fmap read . lines
