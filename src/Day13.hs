@@ -1,16 +1,13 @@
 module Day13 (part1, part2, solvePart1, solvePart2, parseInput) where
 
 import Data.List.Split (splitOn)
-import Data.Maybe  (fromJust)
-
+import Data.Maybe (fromJust)
 import Math.NumberTheory.Moduli.Chinese
 
 parseInput :: String -> (Int, [Int])
 parseInput str =
   let [a, b] = splitOn "\n" str
-   in (read a, readList b)
-  where
-    readList = fmap read . filter (/= "x") . splitOn ","
+   in (read a, fmap read . filter (/= "x") . splitOn "," $ b)
 
 solvePart1 :: Int -> [Int] -> Int
 solvePart1 firstDeparture = calculateResult . minimum . map (\t -> head $ dropWhile (\(a, _) -> a < firstDeparture) (zip [0, t ..] (repeat t)))
@@ -21,14 +18,13 @@ part1 :: String -> Int
 part1 = uncurry Day13.solvePart1 . parseInput
 
 parseInput2 :: String -> [(Integer, Integer)]
-parseInput2 = map (\(a,b) -> (a, read b)) . filter ((/= "x") . snd) . zip [0 .. ] . splitOn "," . last . lines
+parseInput2 = map (\(a, b) -> (a, read b)) . filter ((/= "x") . snd) . zip [0 ..] . splitOn "," . last . lines
 
 solvePart2 :: [(Integer, Integer)] -> Integer
-solvePart2 = fromJust . chineseRemainder . map (\(a,b) -> ((b - a) `mod` b,b))
+solvePart2 = fromJust . chineseRemainder . map (\(a, b) -> ((b - a) `mod` b, b))
 
 part2 :: String -> Integer
 part2 = solvePart2 . parseInput2
-
 
 {-
 Equations to solve:
