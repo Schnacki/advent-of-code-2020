@@ -34,20 +34,20 @@ main = do
   solveDay "13" Day13.part1 Day13.part2
   printBottom
 
-solveDay :: String -> (String -> Int) -> (String -> Int) -> IO ()
+solveDay :: (Show a, Show b) => String -> (String -> a) -> (String -> b) -> IO ()
 solveDay day part1 part2 = do
   input <- readFile $ "input/Day" ++ day ++ ".txt"
   printTableRow day (show (part1 input)) (show (part2 input))
 
 printTableRow :: String -> String -> String -> IO ()
-printTableRow a b c = putStrLn $ "┃ " ++ toSize 4 a ++ "┃ " ++ toSize 14 b ++ "┃ " ++ toSize 14 c ++ "┃"
+printTableRow a b c = putStrLn $ "┃ " ++ toSize 4 a ++ "┃ " ++ toSize 16 b ++ "┃ " ++ toSize 16 c ++ "┃"
   where toSize size str = str ++ replicate (size - length str) ' '
 
 printLine :: IO ()
-printLine = putStrLn "┣━━━━━╋━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━┫"
+printLine = putStrLn "┣━━━━━╋━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━┫"
 
 printTop :: IO ()
-printTop = putStrLn "┏━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓"
+printTop = putStrLn "┏━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓"
 
 printBottom :: IO ()
-printBottom = putStrLn "┗━━━━━┻━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━┛"
+printBottom = putStrLn "┗━━━━━┻━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━┛"
