@@ -1,20 +1,17 @@
 module Day8 (part1, part2, solvePart1, solvePart2, Operation (NOP, ACC, JMP), Computation (Computation)) where
 
 import Data.Maybe (mapMaybe)
+import Data.Char (toUpper)
 
-data Operation = NOP Int | ACC Int | JMP Int deriving (Show, Eq)
+data Operation = NOP Int | ACC Int | JMP Int deriving (Show, Eq, Read)
 
 data Computation = Computation {seen :: [Int], opIndex :: Int, acc :: Int, ops :: [Operation]}
 
+parseInput :: String -> Computation
+parseInput = Computation [] 0 0 . map read . lines . filter (/= '+') . map toUpper
+
 inLoop :: Computation -> Bool
 inLoop (Computation seen index _ _) = index `elem` seen
-
-parseInput :: String -> Computation
-parseInput = Computation [] 0 0 . map parseLine . lines
-  where
-    parseLine ('n' : 'o' : 'p' : ' ' : number) = NOP . read . filter (/= '+') $ number
-    parseLine ('a' : 'c' : 'c' : ' ' : number) = ACC . read . filter (/= '+') $ number
-    parseLine ('j' : 'm' : 'p' : ' ' : number) = JMP . read . filter (/= '+') $ number
 
 performOperation :: Computation -> Computation
 performOperation (Computation seen index val ops) = case ops !! index of

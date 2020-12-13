@@ -2,20 +2,23 @@ module Day12 (part1, part2, solvePart1, solvePart2, Action (..)) where
 
 data Action = NORTH Int | SOUTH Int | EAST Int | WEST Int | LEFT Int | RIGHT Int | FORWARD Int deriving (Show)
 
-instance Read Action where
-  readsPrec _ ('N' : n) = [(NORTH $ read n, "")]
-  readsPrec _ ('S' : n) = [(SOUTH $ read n, "")]
-  readsPrec _ ('E' : n) = [(EAST $ read n, "")]
-  readsPrec _ ('W' : n) = [(WEST $ read n, "")]
-  readsPrec _ ('L' : n) = [(LEFT $ read n, "")]
-  readsPrec _ ('R' : n) = [(RIGHT $ read n, "")]
-  readsPrec _ ('F' : n) = [(FORWARD $ read n, "")]
-  readsPrec _ xs = []
+type Position = (Int, Int)
 
-manhattan :: (Int, Int) -> Int
+instance Read Action where
+  readsPrec _ (action : n) = case action of
+    'N' -> [(NORTH $ read n, "")]
+    'S' -> [(SOUTH $ read n, "")]
+    'E' -> [(EAST $ read n, "")]
+    'W' -> [(WEST $ read n, "")]
+    'L' -> [(LEFT $ read n, "")]
+    'R' -> [(RIGHT $ read n, "")]
+    'F' -> [(FORWARD $ read n, "")]
+    _  -> []
+
+manhattan :: Position -> Int
 manhattan (x, y) = abs x + abs y
 
-data Ship = Ship {pos :: (Int, Int), direction :: Int} deriving (Show)
+data Ship = Ship {pos :: Position, direction :: Int} deriving (Show)
 
 steps :: Ship -> [Action] -> Ship
 steps = foldl step
@@ -39,13 +42,11 @@ solvePart1 = manhattan . pos . steps (Ship (0, 0) 90)
 part1 :: String -> Int
 part1 = solvePart1 . fmap read . lines
 
-data Ship2 = Ship2 {pos' :: (Int, Int), wayPoint :: (Int, Int)} deriving (Show)
+data Ship2 = Ship2 {pos' :: Position, wayPoint :: Position} deriving (Show)
 
-rotate :: (Int, Int) -> Int -> (Int, Int)
-rotate (wx, wy) 0 = (wx, wy)
-rotate (wx, wy) 90 = (wy, - wx)
-rotate (wx, wy) 180 = (- wx, - wy)
-rotate (wx, wy) 270 = (- wy, wx)
+rotate :: Position -> Int -> Position
+rotate (wx, wy) angle = ([wx,wy,-wx,-wy] !! index, [wy,-wx,-wy,wx] !! index)
+  where index = div angle 90
 
 steps2 :: Ship2 -> [Action] -> Ship2
 steps2 = foldl step
