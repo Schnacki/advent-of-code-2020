@@ -1,4 +1,4 @@
-module Day14 (part1, part2, Input (..), solvePart1, solvePart2, parseInput,BitOperation(..),applyMask', parseMask') where
+module Day14 (part1, part2, Input (..), solvePart1, solvePart2) where
 
 import Data.Bits
 import qualified Data.Map as Map
@@ -55,17 +55,18 @@ solvePart1 = runComputation updateMemory
 part1 :: String -> Int
 part1 = solvePart1 . parseInput
 
-data BitOperation = Set | Clear | Floating deriving Show
-type BitModification = (Int,BitOperation)
+data BitOperation = Set | Clear | Floating deriving (Show)
+
+type BitModification = (Int, BitOperation)
 
 parseMask' :: String -> [BitModification]
-parseMask' = map (\(b,i) -> if i == '1' then (b,Set) else (b,Floating)) . filter (\(_,i) -> i /= '0') . zip [35, 34 ..0]
+parseMask' = map (\(b, i) -> if i == '1' then (b, Set) else (b, Floating)) . filter (\(_, i) -> i /= '0') . zip [35, 34 .. 0]
 
 applyMask' :: [BitModification] -> Int -> [Int]
 applyMask' [] value = [value]
-applyMask' ((i,Set):ops) value = map (\v -> setBit v i) (applyMask' ops value)
-applyMask' ((i,Clear):ops) value = map (\v -> clearBit v i) (applyMask' ops value)
-applyMask' ((i,Floating):ops) value= (applyMask' ops value) >>= ((\v -> [clearBit v i,setBit v i]))
+applyMask' ((i, Set) : ops) value = map (`setBit` i) (applyMask' ops value)
+applyMask' ((i, Clear) : ops) value = map (`clearBit` i) (applyMask' ops value)
+applyMask' ((i, Floating) : ops) value = applyMask' ops value >>= (\v -> [clearBit v i, setBit v i])
 
 solvePart2 :: [Input] -> Int
 solvePart2 = runComputation updateMemory
