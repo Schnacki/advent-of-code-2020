@@ -32,6 +32,15 @@ parseInput input = case M.parse (M.many $ choice [parseMask, parseMem]) "" input
   Left _ -> []
   Right a -> a
 
+type Memory = Map.Map Int Int
+
+runComputation :: (Memory -> Int -> Int -> String -> Memory) -> [Input] -> Int
+runComputation f input = solve input Map.empty ""
+  where
+    solve [] mem _ = Map.foldr (+) 0 mem
+    solve ((Mask newMask) : xs) mem _ = solve xs mem newMask
+    solve ((Mem addr value) : xs) mem mask = solve xs (f mem addr value mask) mask
+
 applyMask :: String -> Int -> Int
 applyMask mask value = value .&. andMask .|. orMask
   where
@@ -39,15 +48,12 @@ applyMask mask value = value .&. andMask .|. orMask
     orMask = foldl (\b a -> 2 * b + if a == '1' then 1 else 0) 0 mask
 
 solvePart1 :: [Input] -> Int
-solvePart1 input = solve input Map.empty ""
+solvePart1 = runComputation updateMemory
   where
-    solve [] mem _ = Map.foldr (+) 0 mem
-    solve ((Mask newMask) : xs) mem _ = solve xs mem newMask
-    solve ((Mem addr value) : xs) mem mask = solve xs (Map.insert addr (applyMask mask value) mem) mask
+    updateMemory mem addr value mask = Map.insert addr (applyMask mask value) mem
 
 part1 :: String -> Int
 part1 = solvePart1 . parseInput
-
 
 data BitOperation = Set | Clear | Floating deriving Show
 type BitModification = (Int,BitOperation)
@@ -61,13 +67,10 @@ applyMask' ((i,Set):ops) value = map (\v -> setBit v i) (applyMask' ops value)
 applyMask' ((i,Clear):ops) value = map (\v -> clearBit v i) (applyMask' ops value)
 applyMask' ((i,Floating):ops) value= (applyMask' ops value) >>= ((\v -> [clearBit v i,setBit v i]))
 
-
 solvePart2 :: [Input] -> Int
-solvePart2 input = solve input Map.empty ""
+solvePart2 = runComputation updateMemory
   where
-    solve [] mem _ = Map.foldr (+) 0 mem
-    solve ((Mask newMask) : xs) mem _ = solve xs mem newMask
-    solve ((Mem addr value) : xs) mem mask = solve xs (foldr (\a map -> Map.insert a value map) mem  (applyMask' (parseMask' mask) addr)) mask
+    updateMemory mem addr value mask = foldr (\a map -> Map.insert a value map) mem (applyMask' (parseMask' mask) addr)
 
 part2 :: String -> Int
 part2 = solvePart2 . parseInput
