@@ -1,6 +1,9 @@
-module Day14 (part1, part2, Input (..), solvePart1, solvePart2) where
+{-# LANGUAGE TupleSections #-}
+
+module Day14 (part1, part2, Input (..), solvePart1, solvePart2,BitOperation(..),convertMask) where
 
 import Data.Bits
+import Data.Maybe( mapMaybe)
 import qualified Data.Map as Map
 import Data.Void
 import Text.Megaparsec as M
@@ -34,44 +37,38 @@ parseInput input = case M.parse (M.many $ choice [parseMask, parseMem]) "" input
 
 type Memory = Map.Map Int Int
 
-runComputation :: (Memory -> Int -> Int -> String -> Memory) -> [Input] -> Int
-runComputation f input = solve input Map.empty ""
+data BitOperation = Set | Clear | Floating deriving (Show, Eq)
+
+type BitModification = (Int, BitOperation)
+
+convertMask :: [(Char,BitOperation)] -> String -> [BitModification]
+convertMask lk = mapMaybe (\(i,b) -> (i,) <$> (lookup b lk)) . zip [35, 34 ..]
+
+applyMask :: [BitModification] -> Int -> [Int]
+applyMask [] value = [value]
+applyMask (op : ops) value = case op of
+      (i, Set) -> map (`setBit` i) (applyMask ops value)
+      (i, Clear) -> map (`clearBit` i) (applyMask ops value)
+      (i, Floating) -> applyMask ops value >>= (\v -> [clearBit v i, setBit v i])
+
+solvePart1 :: [Input] -> Int
+solvePart1 input = solve input Map.empty ""
   where
     solve [] mem _ = Map.foldr (+) 0 mem
     solve ((Mask newMask) : xs) mem _ = solve xs mem newMask
-    solve ((Mem addr value) : xs) mem mask = solve xs (f mem addr value mask) mask
-
-applyMask :: String -> Int -> Int
-applyMask mask value = value .&. andMask .|. orMask
-  where
-    andMask = complement . foldl (\b a -> 2 * b + if a == '0' then 1 else 0) 0 $ mask
-    orMask = foldl (\b a -> 2 * b + if a == '1' then 1 else 0) 0 mask
-
-solvePart1 :: [Input] -> Int
-solvePart1 = runComputation updateMemory
-  where
-    updateMemory mem addr value mask = Map.insert addr (applyMask mask value) mem
+    solve ((Mem addr value) : xs) mem mask = solve xs (updateMemory mem addr value mask) mask
+    updateMemory mem addr value mask = Map.insert addr (head (applyMask (convertMask [('1',Set),('0',Clear)] mask) value)) mem
 
 part1 :: String -> Int
 part1 = solvePart1 . parseInput
 
-data BitOperation = Set | Clear | Floating deriving (Show)
-
-type BitModification = (Int, BitOperation)
-
-parseMask' :: String -> [BitModification]
-parseMask' = map (\(b, i) -> if i == '1' then (b, Set) else (b, Floating)) . filter (\(_, i) -> i /= '0') . zip [35, 34 .. 0]
-
-applyMask' :: [BitModification] -> Int -> [Int]
-applyMask' [] value = [value]
-applyMask' ((i, Set) : ops) value = map (`setBit` i) (applyMask' ops value)
-applyMask' ((i, Clear) : ops) value = map (`clearBit` i) (applyMask' ops value)
-applyMask' ((i, Floating) : ops) value = applyMask' ops value >>= (\v -> [clearBit v i, setBit v i])
-
 solvePart2 :: [Input] -> Int
-solvePart2 = runComputation updateMemory
+solvePart2 input = solve input Map.empty ""
   where
-    updateMemory mem addr value mask = foldr (\a map -> Map.insert a value map) mem (applyMask' (parseMask' mask) addr)
+    solve [] mem _ = Map.foldr (+) 0 mem
+    solve ((Mask newMask) : xs) mem _ = solve xs mem newMask
+    solve ((Mem addr value) : xs) mem mask = solve xs (updateMemory mem addr value mask) mask
+    updateMemory mem addr value mask = foldr (\a map -> Map.insert a value map) mem (applyMask (convertMask [('1',Set),('X',Floating)] mask) addr)
 
 part2 :: String -> Int
 part2 = solvePart2 . parseInput
