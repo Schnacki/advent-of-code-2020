@@ -1,19 +1,20 @@
-module Day15 (part1, part2, solvePart1, solvePart2) where
+module Day15 (part1, part2) where
 
+import Data.List.Split (splitOn)
 import qualified Data.Map as M
 import Data.Maybe (maybe)
 
-solve :: Integer -> Integer -> Integer -> (M.Map Integer Integer) -> Integer
-solve limit index number map = if index == limit then number else solve limit (index + 1) (maybe 0 (\n -> index - n) (M.lookup number map)) (M.insert number index map)
+solve :: Integer -> Integer -> Integer -> M.Map Integer Integer -> Integer
+solve limit index number map = if index == limit then number else solve limit (index + 1) (maybe 0 (index -) (M.lookup number map)) (M.insert number index map)
 
-solvePart1 :: Integer
-solvePart1 = solve 2020 8 0 (M.fromList [(2, 1), (0, 2), (1, 3),(7,4),(4,5),(14,6),(18,7)])
+solvePart :: Integer -> M.Map Integer Integer -> Integer
+solvePart limit map = solve limit ((toInteger $ M.size map) + 1) 0 map
 
-solvePart2 :: Integer
-solvePart2 = solve 30000000 8 0 (M.fromList [(2, 1), (0, 2), (1, 3),(7,4),(4,5),(14,6),(18,7)])
+parseInput :: String -> M.Map Integer Integer
+parseInput = M.fromList . (flip zip) [1 ..] . fmap read . splitOn ","
 
 part1 :: String -> Integer
-part1 str = solvePart1
+part1 = solvePart 2020 . parseInput
 
 part2 :: String -> Integer
-part2 str = solvePart2
+part2 = solvePart 30000000 . parseInput
