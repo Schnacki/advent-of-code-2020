@@ -2,6 +2,7 @@ module Day4 (solvePart1, solvePart2, part1, part2) where
 
 import Data.Bifunctor (second)
 import Data.Char (isDigit, isHexDigit)
+import Control.Monad(sequence)
 import Data.List ((\\))
 import Data.List.Split (splitWhen)
 import Data.Maybe (mapMaybe)
@@ -58,7 +59,7 @@ heightValid p =
         _ -> False
 
 passportDataValid :: Passport -> Bool
-passportDataValid p = and $ [passportIdValid, eyeColorValid, hairColorValid, birthYearValid, issuerYearValid, expirationYearValid, heightValid] <*> [p]
+passportDataValid = and . sequence [passportIdValid, eyeColorValid, hairColorValid, birthYearValid, issuerYearValid, expirationYearValid, heightValid]
 
 solvePart2 :: String -> Int
 solvePart2 = length . filter passportDataValid . parseInput
