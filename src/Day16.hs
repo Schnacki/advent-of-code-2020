@@ -1,11 +1,11 @@
-module Day16 (part1, part2, parseRule,Rule(..), parseInput, solvePart1) where
+module Day16 (part1, part2, Rule (..), solvePart1) where
 
-import Text.Megaparsec (choice, many, optional, Parsec, parse, some, sepBy)
-import Text.Megaparsec.Char (alphaNumChar, char, string, space)
+import Control.Applicative ((<|>))
+import Data.Ix (inRange)
+import Data.Void (Void)
+import Text.Megaparsec (Parsec, parse, sepBy, some)
+import Text.Megaparsec.Char (alphaNumChar, char, space, string)
 import Text.Megaparsec.Char.Lexer (decimal)
-import Data.Void(Void)
-import Data.Ix(inRange)
-import Control.Applicative( (<|>) )
 
 type Parser = Parsec Void String
 
@@ -31,7 +31,7 @@ parseList = do
 
 parseTicket :: Parser ([Rule], [Int], [[Int]])
 parseTicket = do
-  rules <- many parseRule
+  rules <- some parseRule
   string "\nyour ticket:\n"
   ticket <- parseList
   string "\nnearby tickets:\n"
@@ -42,7 +42,7 @@ parseInput input = case parse parseTicket "" input of
   Left _ -> error "LOL"
   Right a -> a
 
-data Rule = Rule { fieldName :: String, ranges :: [(Int, Int)] } deriving Show
+data Rule = Rule {fieldName :: String, ranges :: [(Int, Int)]} deriving (Show)
 
 fieldInvalid :: Int -> [Rule] -> Bool
 fieldInvalid field = not . any (ruleApplies field)
@@ -53,8 +53,9 @@ solvePart1 :: [Int] -> [Rule] -> Int
 solvePart1 fields rules = sum $ filter (`fieldInvalid` rules) fields
 
 part1 :: String -> Int
-part1 input = let (rules, _, tickets) = parseInput input
-  in solvePart1 (concat tickets) rules
+part1 input =
+  let (rules, _, tickets) = parseInput input
+   in solvePart1 (concat tickets) rules
 
 part2 :: String -> Int
 part2 _ = 0
