@@ -1,7 +1,8 @@
-module Day16 (part1, part2, Rule (..), solvePart1) where
+module Day16 (part1, part2, Rule (..), solvePart1, parseInput) where
 
 import Control.Applicative ((<|>))
 import Data.Ix (inRange)
+import Data.List (transpose)
 import Data.Void (Void)
 import Text.Megaparsec (Parsec, parse, sepBy, some)
 import Text.Megaparsec.Char (alphaNumChar, char, space, string)
@@ -44,10 +45,11 @@ parseInput input = case parse parseTicket "" input of
 
 data Rule = Rule {fieldName :: String, ranges :: [(Int, Int)]} deriving (Show)
 
+ruleApplies :: Int -> Rule -> Bool
+ruleApplies i = any (`inRange` i) . ranges
+
 fieldInvalid :: Int -> [Rule] -> Bool
 fieldInvalid field = not . any (ruleApplies field)
-  where
-    ruleApplies i = any (`inRange` i) . ranges
 
 solvePart1 :: [Int] -> [Rule] -> Int
 solvePart1 fields rules = sum $ filter (`fieldInvalid` rules) fields
@@ -58,4 +60,4 @@ part1 input =
    in solvePart1 (concat tickets) rules
 
 part2 :: String -> Int
-part2 _ = 0
+part2 input = 0

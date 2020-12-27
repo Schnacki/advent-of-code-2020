@@ -11,7 +11,7 @@ solvePart :: Int -> M.IntMap Int -> Int
 solvePart limit map = solve limit (1 + M.size map) 0 map
 
 parseInput :: String -> M.IntMap Int
-parseInput = M.fromList . (flip zip) [1 ..] . fmap read . splitOn ","
+parseInput = M.fromList . flip zip [1 ..] . fmap read . splitOn ","
 
 part1 :: String -> Int
 part1 = solvePart 2020 . parseInput
